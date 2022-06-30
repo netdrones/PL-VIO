@@ -1,4 +1,4 @@
-TAG = 0.0.1
+TAG = latest
 ORG ?= ghcr.io/netdrones
 IMAGE ?= plvio
 DOCKERFILE ?= Dockerfile
@@ -12,3 +12,7 @@ build:
 .PHONY: run
 run:
 	sudo sh +x run.sh
+
+.PHONY: attach
+attach:
+	sudo docker exec -it dazzling_burnell bash

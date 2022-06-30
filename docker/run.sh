@@ -6,13 +6,16 @@ XAUTH=/tmp/.docker.xauth
 touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
-# Allow X server connection
-xhost +local:docker
-docker run -it --rm \
-  --env="DISPLAY" \
-  --env="QT_X11_no_mitshm=1" \
-  --volume="/tmp/.x11-unix:/tmp/.x11-unix:rw" \
-  ghcr.io/netdrones/plvio:0.0.1
+xhost +local:root
 
-# Disallow X server connection
+docker run -it --rm --privileged --net=host --ipc=host \
+	--gpus=all \
+	-e "DISPLAY=$DISPLAY" \
+	-e "QT_X11NO_MITSHM=1" \
+	-v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+	-e "XAUTHORITY=$XAUTH" \
+	-e ROS_IP=127.0.0.1 \
+	--cap-add=SYS_PTRACE \
+	ghcr.io/netdrones/plvio:latest
+
 xhost -local:root
